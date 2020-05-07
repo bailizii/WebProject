@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<br/>
+<img style="text-align:center;"src="./logo.png" width="300" height="100" />
+<br/>
+<h1 style="text-align:center;font-size:50px;">Phonebook</h1>
+<br/> <br/>
+
+
+<div style="border: 2px dashed #ccc;width:320px;text-align:center;">
+    <label for="ID">ID：</label>
+    <input type="text" id="ID" name="ID" class="text"/>
+    <br/>
+    <label for="firstname">名字(firstname)：</label>
+    <input type="text" id="firstname" name="firstname"/>
+    <br/>
+    <label for="lastname">姓氏(lastname)：</label>
+    <input type="text" id="lastname" name="lastname"/>
+    <br/>
+    <label for="phonenumber">手机号(phonenumber)：</label>
+    <input type="text" id="phonenumber" name="phonenumber"/>
+    <br/>
+    <input type="button" onclick="save()" value="新增"/>
+    <hr/>
+    <label for="search_firstname">输入名：</label>
+    <input type="text" id="search_firstname" name="search_firstname"/>
+    <input type="button" onclick="findOne()" value="查找名"/>
+    <p id="find_result"><br/></p>
+</div>
+<br/>
+<div id="list">
+</div>
+
+</div>
+
+<table border="1" cellpadding="10" width="100%">
+    <tr>
+        <th>ID</th>
+        <th>FirstName</th>
+        <th>LastName</th>
+        <th>PhoneNumber</th>
+    </tr>
+
+    <tr>
+        <th> 1 </th>
+        <th>San </th>
+        <th>Zhang </th>
+        <th> 18301236711</th>
+    </tr>
+
+    <tr>
+        <th>2</th>
+        <th>Wu</th>
+        <th>Wang</th>
+        <th>16201236711</th>
+    </tr>
+
+    <tr>
+        <th>        </th>
+        <th>        </th>
+        <th>        </th>
+        <th>        </th>
+    </tr>
+
+    <tr>
+        <th>        </th>
+        <th>        </th>
+        <th>        </th>
+        <th>        </th>
+    </tr>
+</table>
+
+</body>
+</html>
