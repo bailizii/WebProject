@@ -1,8 +1,9 @@
 package model
 
 type Person struct {
-	Firstname   string `json:"firstname,omitempty"`
-	Lastname    string `json:"lastname,omitempty"`
+	ID			string    `json:"id,omitempty"`
+	Name   string `json:"name,omitempty"`
+	//Lastname    string `json:"lastname,omitempty"`
 	Phone       string `json:"phone,omitempty"`
 }
 

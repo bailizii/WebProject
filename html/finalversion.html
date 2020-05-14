@@ -1,0 +1,368 @@
+<html>
+
+<head>
+
+
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
+    </script>
+    <script>
+
+        function reloadpage(content){
+            var t = document.getElementById("phone_list");
+            t.innerHTML = ''
+            content.forEach(phone => {
+                t.innerHTML = t.innerHTML + '<tr><td>' + phone.id + '</td><td>' + phone.name
+                    + '</td><td>' + phone.phone + '</td><td>'
+                    +'<input type ="button" id = "edit" value ="编辑" onclick = "editItem(this)">' + '</td><td>'
+                    +'<input type ="button" id = "delete" value ="删除" onclick = "removeItem(this)">' +'</td></tr>'
+            });
+        }
+
+
+        function loadPhones() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://localhost:5000/people/all",true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState==4 && xhr.status == 200) {
+                    var phones = JSON.parse(xhr.responseText);
+                    reloadpage(phones);
+                }
+            };
+            xhr.send();
+        }
+
+        function toServer() {
+            inputid = document.getElementById("0").value
+            inputname = document.getElementById("1").value
+            inputphone = document.getElementById("2").value
+            var tableId = document.getElementById("phone_list");
+
+
+            if(inputid == '' ) {
+                alert("请输入ID号码");
+                return false
+            }else if(inputname == '' && inputphone == '')
+            {
+                alert("请输入姓名或电话相关信息后再提交");
+                return false
+            }
+
+
+            for (var i = 0; i < tableId.rows.length; i++) {
+                personid = tableId.rows[i].cells[0].innerText
+                if (inputid != personid) {
+                    continue
+                } else {
+                    alert("不能有重复的ID");
+                    return false
+                }
+            }
+
+            // 在用ajax提交表单数据时，我们常需要将form表单数据转为JSON格式
+            //但是form表单序列化仅加上加上JSON.stringify()还不够,需要将form序列化用函数转换如:
+            var unindexed_array = $("#myform").serializeArray(); //表内数据格式化成json格式
+            var param = {};
+
+            $.map(unindexed_array, function (n, i) {
+                param[n['name']] = n['value'];
+            });
+
+            //param["id"] = parseInt(param["id"])
+
+            //console.log(param)
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "http://localhost:5000/people",
+                data: JSON.stringify(param),
+                dataType: "json",
+                async: false,
+                error: function (request) {
+                    alert("失败");
+                },
+                success: function (param) {
+                    console.log(param);
+                    reloadpage(param);
+
+                }
+            });
+        }
+
+
+
+        function searchItem() {
+
+            inputname= document.getElementById("0").value//用ID找
+            var tableId = document.getElementById("phone_list");
+            var index  = -1
+            var repeat = 0
+            for(var i=0;i<tableId.rows.length;i++)
+            {
+                personname = tableId.rows[i].cells[0].innerText
+                if (personname != inputname){
+                    continue
+                }else{
+                    index = i
+                    repeat = repeat + 1
+                }
+            }
+
+            if(index == -1 && document.getElementById("1").value =='') {
+
+                alert("没有查询到，请再次确认输入无误");
+                return false
+            }else if (repeat != 1){
+
+                inputid= document.getElementById("1").value//用姓名找
+                var index  = -1
+
+                for(var i=0;i<tableId.rows.length;i++)
+                {
+                    personid = tableId.rows[i].cells[1].innerText
+                    if (personid != inputid){
+                        continue
+                    }else{
+                        index = i
+                    }
+                }
+
+                if (index == -1) {
+                    alert("没有查询到，请再次确认输入无误");
+                }
+
+            }
+
+
+            //console.log(index)
+
+            $.ajax({
+                type: "GET",
+                contentType: "application/json",
+                url: "http://localhost:5000/people/find/"+ index ,
+                success: function (data) {
+                    //console.log(data)
+                    alert("手机号：" + data.phone);
+                    //loadPhones();
+                    //location.reload(true);
+                    //window.location.reload();
+                }
+            });
+
+        }
+
+
+        function changeItem(){
+
+
+            inputid = document.getElementById("0").value
+            if (inputid == ""){
+                alert("ID必须输入");
+                return false
+            }
+            var tableId = document.getElementById("phone_list");
+
+            repeat = 0
+            console.log("1:",tableId.rows.length)
+            for (var i = 0; i < tableId.rows.length; i++) {
+                console.log(i,tableId.rows[i].cells[0].innerText )
+                personid = tableId.rows[i].cells[0].innerText
+                if (inputid != personid) {
+                    continue
+                } else if (inputid == personid) {
+                    repeat = repeat + 1
+                    if (repeat == 2){
+                        alert("不能有重复的ID");
+                        return false
+                    }
+                }
+            }
+
+            // for (var i =0 ;i<tableId.rows.length; i++){
+            //     personid =tableId.rows[i].cells[0].innerHTML
+            //     console.log(personid)
+            // }
+            // console.log("4:",repeat)
+
+            inputname= document.getElementById("0").value//用ID找
+            var index  = -1
+            var repeat = 0
+            for(var i=0;i<tableId.rows.length;i++)
+            {
+                personname = tableId.rows[i].cells[0].innerText
+                if (personname != inputname){
+                    continue
+                }else{
+                    index = i
+                    repeat = repeat + 1
+                }
+            }
+
+            if(index == -1 && document.getElementById("1").value =='') {
+
+                alert("没有查询到，请再次确认输入无误");
+                return false
+            }else if (repeat != 1){
+
+                inputid= document.getElementById("1").value//用姓名找
+                var index  = -1
+
+                for(var i=0;i<tableId.rows.length;i++)
+                {
+                    personid = tableId.rows[i].cells[1].innerText
+                    if (personid != inputid){
+                        continue
+                    }else{
+                        index = i
+                    }
+                }
+
+                if (index == -1) {
+                    alert("没有查询到，请再次确认输入无误");
+                }
+
+            }
+
+
+            var unindexed_array = $("#myform").serializeArray(); //表内数据格式化成json格式
+            var param = {};
+
+            $.map(unindexed_array, function (n, i) {
+                param[n['name']] = n['value'];
+            });
+
+            //param["id"] = parseInt(param["id"])
+            //console.log(param)
+
+            $.ajax({
+                type: "PUT",
+                contentType: "application/json",
+                url: "http://localhost:5000/people/"+ index ,
+                data: JSON.stringify(param),
+                dataType: "json",
+                async: false,
+                success: function (param) {
+                    //console.log(param);  返回只是一个object 不是一组array（包含所有object）
+                    //reloadpage(param);
+                    loadPhones();
+                }
+            });
+
+        }
+
+
+        function editItem(x){
+            var rowIndex = x.parentNode.parentNode.rowIndex
+
+            //document.getElementsByName()
+            // x.closest('tr').innerText[0]
+            //x.closest('tr').innerText[6]
+            //x.closest('tr').innerText[0]不行  innertext就取出一位数  ID = "12345"，也就取出1
+            var textID  = x.closest('tr').cells[0].innerHTML
+            var textFN  = x.closest('tr').cells[1].innerHTML
+            var textPN  = x.closest('tr').cells[2].innerHTML
+            // $("#myform").innerText[0].value                 = text    请记住这些垃圾的尝试 都没有用好吧 不要自己瞎编
+            // document.getElementsByTagName("id").value       = text
+            // $(td).find("input[name='id']").value            = text
+            // document.getElementsByName("id").value          = text
+            // document.getElementById("myform").innerText[0]  = text
+            document.getElementById("0").value = textID
+            document.getElementById("1").value = textFN
+            document.getElementById("2").value = textPN
+
+        }
+
+
+
+        function removeItem(x){
+            var rowIndex = x.parentNode.parentNode.rowIndex -1
+           //var rowIndex = document.getElementById("delete").closest('tr').sectionRowIndex
+
+            //console.log(document.getElementById("delete").closest('tr').innerText)
+            //1	San	Zhang	18301236711
+
+            $.ajax({
+                type: "DELETE",
+                contentType: "application/json",
+                url: "http://localhost:5000/people/"+ rowIndex ,
+                success: function (data) {
+                    //console.log("error")
+                    loadPhones();
+                    //location.reload(true);
+                    //window.location.reload();
+
+                }
+            });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.removeEventListener('DOMContentLoaded', arguments.callee, false);
+            loadPhones();
+        }, false);
+
+
+    </script>
+
+
+
+</head>
+
+<body>
+<h1 align="center">电话本</h1>
+
+<p align="center">
+    <font size="1" face="Verdana">
+        1. ID一定要输入，且必须为正整数，且必须是唯一的，任何情况下，通讯录中都不会出现相同的两个ID。
+        <br>
+        2.使用查询功能，首先会根据你输入的ID进行查询，如果在记录中未能找到该ID，会根据你输入的姓名再次寻找。
+        <br>
+        3.使用编辑功能时，推荐使用者，先找到那个想编辑的行，点击编辑，输入框会自动帮你填充已有数据。但如果你懒的下拉寻找，那请输入想要修改信息行的正确的ID号码，否则可能出现修改错误。
+    </font>
+</p>
+<hr  color="darkblue" />
+<div class="div1" align="center" style="margin-top: 10px">
+    <table>
+        <tbody>
+        <form id="myform" method="post">
+            <tr>
+                <td><p>ID：</p ></td>
+                <td><input onkeyup="this.value=this.value.replace(/[^0-9.]/g,'')" id = "0" type="text" name="id" /></td>
+                <td><p>名字：</p ></td>
+                <td><input type="text" name="name" id = "1"/></td>
+                <td><p>手机号：</p ></td>
+                <td><input onkeyup="this.value=this.value.replace(/[^(\+)0-9.]/g,'')" type="text" name="phone" id = "2"/></td>
+            </tr>
+            <tr>
+                <td></td>
+
+                    <input class="button" type="button" value="创建新用户" onclick="toServer()"/>
+                </td>
+
+                    <input class="button" type="button" value="修改已有用户信息" onclick="changeItem()"/>
+                </td>
+
+                    <input class="button" type="button" value="查询某电话号码" onclick="searchItem()"/>
+                </td>
+            </tr>
+        </form>
+        </tbody>
+    </table>
+</div>
+
+<table  style="margin-top: 15px;" border = "1" align="center" >
+    <thead>
+    <tr>
+        <th scope ="col" width = 10%>ID</th> <!--<tr> 标签定义 HTML 表格中的行。-->
+        <th scope ="col" width = 25%>Name</th>
+        <th scope ="col" width = 35%>Phonenumber</th>
+        <th width = 15%> Edit</th>
+        <th width = 15%> Delete</th>
+
+    </tr>
+    </thead>
+
+    <tbody id= "phone_list" align="center">
+
+    </tbody >
+
+</table>
